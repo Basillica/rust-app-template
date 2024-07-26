@@ -1,0 +1,16 @@
+### query params
+GET http://localhost:8080/auth/user?name=tonie&id=someuuid&email=sample@gmail.com HTTP/1.1
+content-type: application/json
+
+### path params
+GET http://localhost:8080/auth/user/tonie/someuuid/sample@gmail.com HTTP/1.1
+content-type: application/json
+
+###
+post http://localhost:8080/auth/login HTTP/1.1
+content-type: application/json
+
+{
+    "email": "example@gmail.com",
+    "password":  "hiudnoweinslk4eio"
+}
