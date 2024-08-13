@@ -25,27 +25,28 @@
 
 -   &#9745; RESTful APIs
 -   &#9745; Handling JSON Data
--   &#x2610; Static File Handling
 -   &#9745; Error Handling and Status Codes
 
 # Database Integration
 
--   &#x2610; Introduction to Databases in Rust
--   &#x2610; Setting up a PostgreSQL Database
--   &#x2610; Using an ORM (e.g., Diesel)
--   &#x2610; Querying the Database
--   &#x2610; Handling Transactions
+-   &#9745; Logging and tracing
+-   &#9745; Using and managing env variables
+-   &#9745; Introduction to Databases in Rust
+-   &#9745; Setting up a PostgreSQL Database
+-   &#9745; Introductin to ORMs (e.g., Diesel)
+-   &#9745; Querying the Database
+-   &#9745; Handling Transactions
 
 # Authentication and Authorization
 
--   &#x2610; Introduction to Authentication and Authorization
--   &#x2610; Implementing Authentication with JWT
--   &#x2610; Securing Routes with Authorization
--   &#x2610; Session and session management
-    -   &#x2610; Introduction to Session Management
-    -   &#x2610; Implementing Session Stores (e.g., Cookie-based, Redis)
-    -   &#x2610; Handling Session Data
-    -   &#x2610; Securing Sessions
+-   &#9745; Introduction to Authentication and Authorization
+-   &#9745; Implementing Authentication with JWT
+-   &#9745; Securing Routes with Authorization
+-   &#9745; Session and session management
+    -   &#9745; Introduction to Session Management
+    -   &#9745; Implementing Session Stores (e.g., Cookie-based, Redis)
+    -   &#9745; Handling Session Data
+    -   &#9745; Securing Sessions
 
 # WebSocket Server
 
@@ -97,6 +98,10 @@
 -   &#x2610; Asynchronous Programming with Tokio
 -   &#x2610; Integrating with External APIs
 -   &#x2610; WebAssembly and Serverless Functions
+
+# Extras
+
+-   &#x2610; Using an ORM (e.g., Diesel)
 
 # Real-world Projects and Case Studies
 

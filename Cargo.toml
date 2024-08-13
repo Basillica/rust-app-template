@@ -5,5 +5,22 @@ edition = "2021"
 
 [dependencies]
 actix-web = "4"
+actix-session = { version = "0.10.0", features = ["cookie-session", "redis-session"] }
 serde = {version = "1.0", features = ["derive"]}
 derive_more = "0.99.18"
+
+# logging and tracing
+tracing = "0.1"
+tracing-subscriber = "0.3"
+
+# env vars
+dotenv = "0.15"
+jsonwebtoken = "9.3"
+
+# db
+shuttle-shared-db = {version = "0.47", features = ["postgres", "sqlx"]}
+sqlx = "0.7"
+
+## uuid
+uuid = {version = "1.2", features = ["serde", "v4"]}
+futures-util = "0.3"

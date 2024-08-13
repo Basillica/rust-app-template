@@ -1,5 +1,5 @@
-use std::sync::Mutex;
+use sqlx::PgPool;
 
 pub struct AppState {
-   pub state: Mutex<String>
+   pub pool: PgPool
 }

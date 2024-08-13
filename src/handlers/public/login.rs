@@ -1,12 +1,17 @@
 use actix_web::{ post, web,HttpResponse, Responder};
-use crate::models::{auth, state};
+use crate::{models::{auth, errors::HttpError, state}, utils::{db::users::getByEmail, jwt::jwt::encode}};
 
 
 #[post("/login")]
-async fn login(app_data: web::Data<state::AppState>, req: web::Json<auth::LoginReq>) -> impl Responder {
-    let mut state = app_data.state.lock().unwrap();
-    *state = "login".to_string();
-    println!("the current app state is {}", state);
-    println!("your credentials are {:?}", req);
-    HttpResponse::Ok().body("Hello world!")
+async fn login(app_data: web::Data<state::AppState>, req: web::Json<auth::LoginReq>) -> Result<impl Responder,  HttpError>  {
+    match getByEmail(req.email.clone(), &app_data.pool).await {
+        Ok(user) => {
+            let token = encode(user);
+            Ok(HttpResponse::Ok().body(token))
+        },
+        Err(e) => {
+            println!("{:?}", e);
+            Err(HttpError::Unauthorized)
+        }
+    }
 }

@@ -14,3 +14,38 @@ content-type: application/json
     "email": "example@gmail.com",
     "password":  "hiudnoweinslk4eio"
 }
+
+
+### add new user
+POST http://localhost:8080/user/user/add HTTP/1.1
+content-type: application/json
+
+{
+    "firstname": "etienne",
+    "lastname": "tonie",
+    "password": "password",
+    "email": "basillica@example.com",
+    "id": ""
+}
+
+### get user
+GET http://localhost:8080/user/user/343d710d-173e-4982-a583-3e06eeb1fd01 HTTP/1.1
+content-type: application/json
+
+### get users
+GET http://localhost:8080/user/users HTTP/1.1
+content-type: application/json
+
+### delete user
+DELETE http://localhost:8080/user/user/343d710d-173e-4982-a583-3e06eeb1fd01 HTTP/1.1
+content-type: application/json
+
+
+### user login
+POST http://localhost:8080/public/login HTTP/1.1
+content-type: application/json
+
+{
+    "password": "",
+    "email": "basillica@example.com"
+}
