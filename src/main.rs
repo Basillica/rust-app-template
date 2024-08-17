@@ -1,4 +1,6 @@
 use actix_web::{ web, App, HttpResponse, HttpServer, Responder};
+mod chatserver;
+
 use middleware::auth::TokenAuth;
 use sqlx::{ postgres::PgPoolOptions, Executor};
 use tracing::{info, Level};
@@ -36,22 +38,16 @@ async fn main() -> std::io::Result<()> {
         .finish();
     tracing::subscriber::set_global_default(subscriber).expect("error setting global subscriber for tracing");
 
-    // redis connection, will error out if there it is not able to make a connection
-    // let key = Key::generate();
-    // let redis_store = RedisSessionStore::new("redis://127.0.0.1:6379").await.unwrap();
-
     info!("starting server at port 8080");
     HttpServer::new(move || {
         App::new()
             .app_data(data.clone())
             .service(api::public::get_public_services())
             .wrap(TokenAuth)
-            // .wrap(
-            //     SessionMiddleware::new(redis_store.clone(), key.clone())
-            // )
             .service(api::auth::get_auth_services())
             .service(api::user::get_user_services())
             .route("/health", web::get().to(manual_hello))
+            .route("/ws", web::get().to(handlers::chat::ws))
     })
     .bind(("127.0.0.1", 8080))?
     .run()

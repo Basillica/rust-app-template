@@ -50,11 +50,11 @@
 
 # WebSocket Server
 
--   &#x2610; Introduction to WebSockets
--   &#x2610; Setting up a WebSocket Server with Actix Web
--   &#x2610; Handling WebSocket Messages
--   &#x2610; Broadcasting Messages
--   &#x2610; Integrating WebSockets with a Database
+-   &#9745; Introduction to WebSockets
+-   &#9745; Setting up a WebSocket Server with Actix Web
+-   &#9745; Handling WebSocket Messages
+-   &#9745; Broadcasting Messages
+-   &#9745; Integrating WebSockets with a Database
 
 # File Server
 
@@ -105,6 +105,7 @@
 
 # Real-world Projects and Case Studies
 
+-   &#x2610; A production-grade chat server
 -   &#x2610; Rust for distrubuted systems
 -   &#x2610; Rust for IOT+ systems
 -   &#x2610; Rust as a Backend server
