@@ -56,12 +56,12 @@
 -   &#9745; Broadcasting Messages
 -   &#9745; Integrating WebSockets with a Database
 
-# File Server
+# Static files
 
--   &#x2610; Serving Static Files
--   &#x2610; Handling File Uploads
--   &#x2610; Streaming File Downloads
--   &#x2610; Integrating with Cloud Storage (e.g., AWS S3)
+-   &#9745; Serving Static Files
+-   &#9745; Handling File Uploads
+-   &#9745; Streaming File Downloads
+-   &#9745; Integrating with Cloud Storage (e.g., AWS S3)
 
 # Cron and Scheduling
 
