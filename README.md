@@ -70,6 +70,14 @@
 -   &#x2610; Handling Recurring Jobs
 -   &#x2610; Integrating with External Scheduling Services
 
+[//]: <> \* \* \* \* \* command to execute
+| | | | |
+| | | | +-- Day of week (0 - 7) (Sunday=0 or 7)
+| | | +---- Month (1 - 12)
+| | +------ Day of month (1 - 31)
+| +-------- Hour (0 - 23)
++---------- Minute (0 - 59)
+
 # Message Queues and NATS
 
 -   &#x2610; Introduction to Message Queues and NATS
