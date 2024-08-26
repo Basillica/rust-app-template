@@ -80,10 +80,10 @@
 
 # Message Queues and NATS
 
--   &#x2610; Introduction to Message Queues and NATS
--   &#x2610; Setting up a NATS Server
--   &#x2610; Publishing and Subscribing to Messages
--   &#x2610; Handling Asynchronous Tasks with NATS
+-   &#9745; Introduction to Message Queues and NATS
+-   &#9745; Setting up a NATS Server
+-   &#9745; Publishing and Subscribing to Messages
+-   &#9745; Handling Asynchronous Tasks with NATS
 
 # Testing and Debugging
 
