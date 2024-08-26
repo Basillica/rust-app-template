@@ -49,3 +49,11 @@ content-type: application/json
     "password": "",
     "email": "basillica@example.com"
 }
+
+### nats publish
+POST http://localhost:8080/nats/publish HTTP/1.1
+content-type: application/json
+
+{
+    "message": "basillica@example.com"
+}

@@ -4,7 +4,7 @@ use crate::{models::{auth, errors::HttpError, state}, utils::{db::users::getByEm
 
 #[post("/login")]
 async fn login(app_data: web::Data<state::AppState>, req: web::Json<auth::LoginReq>) -> Result<impl Responder,  HttpError>  {
-    match getByEmail(req.email.clone(), &app_data.pool).await {
+    match getByEmail(req.email.clone(), &app_data.pool.lock().unwrap()).await {
         Ok(user) => {
             let token = encode(user);
             Ok(HttpResponse::Ok().body(token))

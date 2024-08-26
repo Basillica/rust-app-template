@@ -35,3 +35,6 @@ actix-multipart = "0.7.2"
 # cron
 cron = "0.12.1"
 chrono = "0.4.38"
+
+# queues
+async-nats = "0.35.1"

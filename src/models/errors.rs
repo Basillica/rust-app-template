@@ -18,7 +18,9 @@ pub enum HttpError {
     #[display(fmt = "request timeout")]
     Timeout,
     #[display(fmt = "invalid user credentials")]
-    InvalidCredentials
+    InvalidCredentials,
+    #[display(fmt = "Nats error")]
+    NatsError,
 }
 
 impl error::ResponseError for HttpError{
@@ -35,6 +37,7 @@ impl error::ResponseError for HttpError{
             HttpError::Unauthenticated => StatusCode::UNAUTHORIZED,
             HttpError::Timeout => StatusCode::REQUEST_TIMEOUT,
             HttpError::InvalidCredentials => StatusCode::BAD_REQUEST,
+            HttpError::NatsError => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 }
