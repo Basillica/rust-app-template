@@ -65,10 +65,10 @@
 
 # Cron and Scheduling
 
--   &#x2610; Introduction to Cron and Scheduling
--   &#x2610; Setting up Scheduled Tasks with Actix Web
--   &#x2610; Handling Recurring Jobs
--   &#x2610; Integrating with External Scheduling Services
+-   &#9745; Introduction to Cron and Scheduling
+-   &#9745; Setting up Scheduled Tasks with Actix Web
+-   &#9745; Handling Recurring Jobs
+-   &#9745; Integrating with External Scheduling Services
 
 [//]: <> \* \* \* \* \* command to execute
 | | | | |
