@@ -46,7 +46,7 @@ POST http://localhost:8080/public/login HTTP/1.1
 content-type: application/json
 
 {
-    "password": "",
+    "password": "remember",
     "email": "basillica@example.com"
 }
 

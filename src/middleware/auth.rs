@@ -1,13 +1,23 @@
 use std::future::{ready, Ready};
-
-use actix_web::{dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform}, error::ErrorUnauthorized, Either, Error};
+use std::{rc::Rc, borrow::Cow};
+use actix_web::{dev::{Service, ServiceRequest, ServiceResponse, Transform}, error::ErrorUnauthorized, Error};
 use futures_util::future::LocalBoxFuture;
 
 use crate::utils::jwt::jwt;
 
 
+#[derive(Debug, Clone)]
+struct User {
+    token: Cow<'static, str>,
+}
 
-pub struct TokenAuth;
+pub struct TokenAuth(Rc<User>);
+
+impl Default for TokenAuth {
+    fn default() -> TokenAuth {
+        TokenAuth(Rc::new(User{token: Cow::Borrowed("")}))
+    }
+}
 
 impl<S, B> Transform<S, ServiceRequest> for TokenAuth
 where
@@ -52,14 +62,26 @@ where
             .headers()
             .get("Authorization");
 
+        let path = req.path();
+        if path.starts_with("/public/") {
+            let fut = self.service.call(req);
+            return Box::pin(async move {
+                let res = fut.await?;
+                Ok(res)
+            })
+        };
+
         if let Some(auth_header) = auth_header {
             let auth_token = auth_header.to_str();
             match auth_token {
                 Ok(token) => {
-                    if !jwt::decode(token) {
-                        return Box::pin(async move {
-                            Err(ErrorUnauthorized("authorization header is invalid".to_string()))
-                        })
+                    let parts: Vec<&str> = token.split(" ").collect();
+                    if parts.len() == 2 && parts[0] == "Bearer" {
+                        if !jwt::decode(parts[1]) {
+                            return Box::pin(async move {
+                                Err(ErrorUnauthorized("authorization header is invalid".to_string()))
+                            })
+                        }
                     }
                 },
                 Err(e) => {
@@ -70,10 +92,9 @@ where
             }
         } else {
             return Box::pin(async move {
-                Err(ErrorUnauthorized("authorization header was not present in requst".to_string()))
+                Err(ErrorUnauthorized("authorization header was not present in request".to_string()))
             })
         }
-
         
         let fut = self.service.call(req);
         Box::pin(async move {
@@ -81,6 +102,4 @@ where
             Ok(res)
         })
     }
-
-    
 }

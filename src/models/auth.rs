@@ -15,6 +15,18 @@ pub struct UserModel {
     pub id: String,
 }
 
+impl Default for UserModel {
+    fn default() -> Self {
+        UserModel {
+            firstname: String::new(),
+            lastname: String::new(),
+            email: String::new(),
+            password: String::new(),
+            id: String::new(),
+        }
+    }
+}
+
 #[derive(Deserialize)]
 pub struct PathParams {
     pub name: String,
