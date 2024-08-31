@@ -15,6 +15,7 @@ pub struct UserModel {
     pub id: String,
 }
 
+
 impl Default for UserModel {
     fn default() -> Self {
         UserModel {

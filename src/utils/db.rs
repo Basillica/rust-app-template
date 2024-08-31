@@ -50,56 +50,56 @@ pub mod users {
 }
 
 
+#[cfg(test)]
 mod db_test {
-    use sqlx::{postgres::PgPoolOptions, PgPool};
     use std::env;
-
+    use dotenv::dotenv;
+    use sqlx::{postgres::PgPoolOptions, PgPool};
     use crate::models::auth::UserModel;
-
     use super::users;
 
-
+    
     #[actix_web::test]
-    async fn test_db_ops() {
-        dotenv::dotenv();
+    async fn test_user_insert() {
+        dotenv().ok();
 
-        let pool = get_conn_pool().await;
+        let pool = create_db_pool().await;
         let user = UserModel{
             firstname: String::from("tonie"),
             lastname: String::from("etienne"),
-            email: String::from("tonie.etienne@gmail.com"),
+            email: String::from("tonie.etienne@example.com"),
             password: String::from("someboringpassword"),
             id: String::from("someboringid"),
         };
-
         let id = "someboringid";
 
         // test insert and get
         users::insert(user, &pool, id).await.unwrap();
         let user = match users::get(id.to_string(), &pool).await {
             Ok(u) => u,
-            Err(_) => UserModel::default()
+            Err(_) => UserModel::default(),
         };
         assert_eq!(user.id, id);
 
-        // test get by email
+        // test get user by email
         let user = match users::getByEmail(user.email, &pool).await {
             Ok(u) => u,
-            Err(_) => UserModel::default()
+            Err(_) => UserModel::default(),
         };
         assert_eq!(user.id, id);
 
-        // test delete
+        // test delete user
         let result = users::delete(id.to_string(), &pool).await.unwrap();
-        assert_eq!(result.rows_affected(), 1);
+        assert_eq!(result.rows_affected(), 1)
+
     }
 
-
-    async fn get_conn_pool() -> PgPool {
-        let db_conn_string = env::var("DATABASE_CONNECTION_STRING").expect("the database connection string was not set");
+    async fn create_db_pool() -> PgPool {
+        let db_conn_str = env::var("DATABASE_CONNECTION_STRING").expect("the database connection string was not set");
         PgPoolOptions::new()
             .max_connections(5)
-            .connect(&db_conn_string)
-            .await.expect("could not exstablish a connection to the database")
+            .connect(&db_conn_str)
+            .await
+            .unwrap()
     }
 }

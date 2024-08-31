@@ -4,7 +4,7 @@ use cron::Schedule;
 use tokio::sync::mpsc;
 use std::sync::Mutex;
 use middleware::auth::TokenAuth;
-use sqlx::{ postgres::PgPoolOptions, Executor};
+use sqlx::{ postgres::PgPoolOptions, Executor, Pool, Postgres};
 use tracing::{info, Level};
 use tracing_subscriber::FmtSubscriber;
 use dotenv::dotenv;
@@ -29,17 +29,6 @@ struct CronState {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
-    let db_conn_string = env::var("DATABASE_CONNECTION_STRING").expect("the database connection string was not set");
-    let pool = PgPoolOptions::new()
-        .max_connections(5)
-        .connect(&db_conn_string)
-        .await.expect("could not exstablish a connection to the database");
-
-    let _ = pool.execute(include_str!("../schema.sql"))
-        .await
-        .expect("there was some error executing schema");
-
-    let pool = Mutex::new(pool);
 
     let (tx, rx) = mpsc::channel::<String>(100);
     let sender = Mutex::new(tx);
@@ -48,7 +37,7 @@ async fn main() -> std::io::Result<()> {
     let client = async_nats::connect(nats_url).await.unwrap();
     let client2 = client.clone();
     let nats_client = Mutex::new(client);
-
+    let pool = utils::get_db_pool(include_str!("../schema.sql")).await;
     let data = web::Data::new(models::state::AppState{ pool, nats_client, sender });
     let subscriber = FmtSubscriber::builder()
         .with_max_level(Level::INFO)
@@ -128,21 +117,9 @@ mod tests {
     #[actix_web::test]
     async fn test_login() {
         dotenv().ok();
-        let db_conn_string = env::var("DATABASE_CONNECTION_STRING").expect("the database connection string was not set");
-        let pool = PgPoolOptions::new()
-            .max_connections(5)
-            .connect(&db_conn_string)
-            .await.expect("could not exstablish a connection to the database");
-
-        let _ = pool.execute(include_str!("../schema.sql"))
-            .await
-            .expect("there was some error executing schema");
-
-        let pool = Mutex::new(pool);
-
+        let pool = utils::get_db_pool(include_str!("../schema.sql")).await;
         let (tx, rx) = mpsc::channel::<String>(100);
         let sender = Mutex::new(tx);
-
         let nats_url = env::var("NATS_URL").unwrap_or_else(|_| "nats://localhost:4222".to_string());
         let client = async_nats::connect(nats_url).await.unwrap();
         let nats_client = Mutex::new(client);
