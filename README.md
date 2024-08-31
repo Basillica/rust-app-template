@@ -87,8 +87,8 @@
 
 # Testing and Debugging
 
--   &#x2610; Writing Unit Tests
--   &#x2610; Integration Testing with Actix Web
+-   &#9745; Writing Unit Tests
+-   &#9745; Integration Testing with Actix Web
 -   &#x2610; Debugging Techniques
 -   &#x2610; Logging and Monitoring
 
@@ -102,8 +102,8 @@
 # Advanced Topics
 
 -   &#x2610; Middleware and Filters
--   &#x2610; Caching Strategies
--   &#x2610; Asynchronous Programming with Tokio
+-   &#9745; Caching Strategies
+-   &#9745; Asynchronous Programming with Tokio
 -   &#x2610; Integrating with External APIs
 -   &#x2610; WebAssembly and Serverless Functions
 
@@ -117,6 +117,6 @@
 -   &#x2610; Rust for distrubuted systems
 -   &#x2610; Rust for IOT+ systems
 -   &#x2610; Rust as a Backend server
--   &#x2610; Rust for serverless functions
+-   &#9745; Rust for serverless functions
 -   &#x2610; Rust for GUI application
 -   &#x2610; Rust for CLI application
