@@ -8,9 +8,11 @@ use crate::utils::jwt::jwt;
 
 #[derive(Debug, Clone)]
 struct User {
+    #[allow(dead_code)]
     token: Cow<'static, str>,
 }
 
+#[allow(dead_code)]
 pub struct TokenAuth(Rc<User>);
 
 impl Default for TokenAuth {

@@ -4,7 +4,6 @@ use cron::Schedule;
 use tokio::sync::mpsc;
 use std::sync::Mutex;
 use middleware::auth::TokenAuth;
-use sqlx::{ postgres::PgPoolOptions, Executor, Pool, Postgres};
 use tracing::{info, Level};
 use tracing_subscriber::FmtSubscriber;
 use dotenv::dotenv;
@@ -118,7 +117,7 @@ mod tests {
     async fn test_login() {
         dotenv().ok();
         let pool = utils::get_db_pool(include_str!("../schema.sql")).await;
-        let (tx, rx) = mpsc::channel::<String>(100);
+        let (tx, _rx) = mpsc::channel::<String>(100);
         let sender = Mutex::new(tx);
         let nats_url = env::var("NATS_URL").unwrap_or_else(|_| "nats://localhost:4222".to_string());
         let client = async_nats::connect(nats_url).await.unwrap();

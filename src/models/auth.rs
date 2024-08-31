@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Debug)]
 pub struct LoginReq {
+    #[allow(dead_code)]
     pub password: String,
     pub email: String,
 }
@@ -30,8 +31,11 @@ impl Default for UserModel {
 
 #[derive(Deserialize)]
 pub struct PathParams {
+    #[allow(dead_code)]
     pub name: String,
+    #[allow(dead_code)]
     pub id: String,
+    #[allow(dead_code)]
     pub email: String,
 }
 

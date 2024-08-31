@@ -1,4 +1,4 @@
-use std::{fmt::format, io::Write};
+use std::io::Write;
 
 use actix_multipart::{form::{json::Json as MPJson, tempfile::TempFile, MultipartForm}, Multipart};
 use actix_web::{get, http::header::ContentDisposition, post, web, Error, HttpRequest, HttpResponse, Responder};
@@ -80,7 +80,6 @@ pub async fn uploadv1(mut payload: Multipart) -> actix_web::Result<HttpResponse>
 
 #[post("/v2/upload")]
 pub async fn uploadv2(mut payload: Multipart) -> impl Responder {
-    let current_dir = std::env::current_dir().expect("failed to read current directory");
     let img_dir = "/images".to_string();
 
     while let Ok(Some(mut field)) = payload.try_next().await {

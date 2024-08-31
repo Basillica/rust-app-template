@@ -25,7 +25,8 @@ pub mod users {
         .await
     }
 
-    pub async fn getByEmail(email: String, pool: &PgPool) -> Result<UserModel, sqlx::Error> {
+    #[allow(dead_code)]
+    pub async fn get_by_email(email: String, pool: &PgPool) -> Result<UserModel, sqlx::Error> {
         sqlx::query_as(
              "SELECT firstname, lastname, email, password, id FROM users WHERE email = $1"
          ).bind(email)
@@ -82,7 +83,7 @@ mod db_test {
         assert_eq!(user.id, id);
 
         // test get user by email
-        let user = match users::getByEmail(user.email, &pool).await {
+        let user = match users::get_by_email(user.email, &pool).await {
             Ok(u) => u,
             Err(_) => UserModel::default(),
         };

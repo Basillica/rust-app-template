@@ -10,7 +10,9 @@ pub mod jwt;
 pub mod guard;
 pub mod queue;
 
-fn Scheduler() {
+
+#[allow(dead_code)]
+pub fn scheduler() {
     let schedule = Schedule::from_str("0/10 * * * * *").unwrap();
     for datetime in schedule.upcoming(Utc).take(10) {
         println!("->>>> {}", datetime);

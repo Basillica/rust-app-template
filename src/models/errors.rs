@@ -14,12 +14,16 @@ pub enum HttpError {
     #[display(fmt = "unauthorized error")]
     Unauthorized,
     #[display(fmt = "unauthenticated error")]
+    #[allow(dead_code)]
     Unauthenticated,
     #[display(fmt = "request timeout")]
+    #[allow(dead_code)]
     Timeout,
     #[display(fmt = "invalid user credentials")]
+    #[allow(dead_code)]
     InvalidCredentials,
     #[display(fmt = "Nats error")]
+    #[allow(dead_code)]
     NatsError,
 }
 
