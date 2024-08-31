@@ -15,7 +15,7 @@ mod handlers;
 mod models;
 mod utils;
 mod middleware;
-mod chatserver;
+// mod chatserver;
 
 async fn index() -> impl Responder {
     HttpResponse::Ok().body("server is alive")
