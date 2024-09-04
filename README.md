@@ -94,10 +94,10 @@
 
 # Deployment and Scaling
 
--   &#x2610; Building for Production
--   &#x2610; Deploying to a Cloud Platform (e.g., AWS, DigitalOcean)
--   &#x2610; Load Balancing and Scaling
--   &#x2610; Monitoring and Logging in Production
+-   &#9745; Building for Production
+-   &#9745; Deploying to a Cloud Platform (e.g., AWS, DigitalOcean, shuttle.rs)
+-   &#9745; Load Balancing and Scaling
+-   &#9745; Monitoring and Logging in Production
 
 # Advanced Topics
 

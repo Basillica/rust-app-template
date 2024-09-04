@@ -1,6 +1,8 @@
-use actix_web::{ web, App, HttpResponse, HttpServer, Responder, middleware::Logger};
+use actix_web::{ web, App, HttpResponse, HttpServer, Responder, middleware as default_middleware};
 use chrono::Local;
 use cron::Schedule;
+use shuttle_actix_web::ShuttleActixWeb;
+use sqlx::{Executor, PgPool};
 use tokio::sync::mpsc;
 use std::sync::Mutex;
 use middleware::auth::TokenAuth;
@@ -8,7 +10,6 @@ use tracing::{info, Level};
 use tracing_subscriber::FmtSubscriber;
 use dotenv::dotenv;
 use std::{env, str::FromStr};
-
 
 mod api;
 mod handlers;
@@ -25,8 +26,11 @@ struct CronState {
     schedule: Mutex<Schedule>
 }
 
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
+
+#[shuttle_runtime::main]
+async fn main(
+    #[shuttle_shared_db::Postgres] pool: PgPool,
+) -> ShuttleActixWeb<impl FnOnce(&mut web::ServiceConfig) + Send + Clone + 'static> {
     dotenv().ok();
 
     let (tx, rx) = mpsc::channel::<String>(100);
@@ -71,26 +75,51 @@ async fn main() -> std::io::Result<()> {
     tokio::spawn(utils::queue::handler_sender(client2.clone(), rx));
     tokio::spawn(utils::queue::receive_from_nats(client2));
 
+    // uncomment this part out if you would like to run outside of shuttle
+    // HttpServer::new(move || {
+    //     App::new()
+    //         .app_data(data.clone())
+    //         .wrap(default_middleware::Logger::default())
+    //         .wrap(default_middleware::DefaultHeaders::new().add(("X-XSS-Protection", "1; mode=block")))
+    //         .wrap(default_middleware::Compress::default())
+    //         .wrap(TokenAuth::default())
+    //         .service(api::public::get_public_services())
+    //         .service(api::auth::get_auth_services())
+    //         .service(api::user::get_user_services())
+    //         .service(handlers::file::upload_video)
+    //         .service(handlers::file::download_file)
+    //         .service(handlers::file::uploadv1)
+    //         .service(handlers::file::uploadv2)
+    //         .service(api::nats::get_nasts_services())
+    //         .route("/health", web::get().to(index))
+    //         .route("/ws", web::get().to(handlers::chat::ws))
+    // })
+    // .bind(("127.0.0.1", 8080))?
+    // .run()
+    // .await
 
-    HttpServer::new(move || {
-        App::new()
-            .app_data(data.clone())
-            .wrap(Logger::default())
-            .wrap(TokenAuth::default())
-            .service(api::public::get_public_services())
-            .service(api::auth::get_auth_services())
-            .service(api::user::get_user_services())
-            .service(handlers::file::upload_video)
-            .service(handlers::file::download_file)
-            .service(handlers::file::uploadv1)
-            .service(handlers::file::uploadv2)
-            .service(api::nats::get_nasts_services())
-            .route("/health", web::get().to(index))
-            .route("/ws", web::get().to(handlers::chat::ws))
-    })
-    .bind(("127.0.0.1", 8080))?
-    .run()
-    .await
+    let config = move |cfg: &mut web::ServiceConfig| {
+        cfg.service(
+            web::scope("/v1")
+                .app_data(data.clone())
+                .wrap(default_middleware::Logger::default())
+                .wrap(default_middleware::DefaultHeaders::new().add(("X-XSS-Protection", "1; mode=block")))
+                .wrap(default_middleware::Compress::default())
+                .wrap(TokenAuth::default())
+                .service(api::public::get_public_services())
+                .service(api::auth::get_auth_services())
+                .service(api::user::get_user_services())
+                .service(handlers::file::upload_video)
+                .service(handlers::file::download_file)
+                .service(handlers::file::uploadv1)
+                .service(handlers::file::uploadv2)
+                .service(api::nats::get_nasts_services())
+                .route("/health", web::get().to(index))
+                .route("/ws", web::get().to(handlers::chat::ws))
+        );
+    };
+
+    Ok(config.into())
 }
 
 
@@ -127,7 +156,7 @@ mod tests {
         let app = test::init_service(
             App::new()
                 .app_data(data.clone())
-                .wrap(Logger::default())
+                .wrap(default_middleware::Logger::default())
                 .wrap(TokenAuth::default())
                 .service(api::public::get_public_services())
                 .service(api::user::get_user_services())
