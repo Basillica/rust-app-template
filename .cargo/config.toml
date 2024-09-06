@@ -1,2 +1,0 @@
-[env]
-DATABASE_CONNECTION_STRING = "postgres://user-easydev-api:Fr8h8EDi5FpfztnGMTetyO6PJXjpBB3z@db.shuttle.rs:5432/db-easydev-api"
