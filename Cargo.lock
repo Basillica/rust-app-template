@@ -1062,6 +1062,35 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1aaf95b3e5c8f23aa320147307562d361db0ae0d51242340f558153b4eb2439b"
 
 [[package]]
+name = "easydev-api"
+version = "0.1.0"
+dependencies = [
+ "actix-files",
+ "actix-multipart",
+ "actix-session",
+ "actix-web",
+ "actix-ws",
+ "async-nats",
+ "chrono",
+ "cron",
+ "derive_more",
+ "dotenv",
+ "futures-util",
+ "jsonwebtoken",
+ "rand",
+ "serde",
+ "serde_json",
+ "shuttle-actix-web",
+ "shuttle-runtime",
+ "shuttle-shared-db",
+ "sqlx",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+ "uuid",
+]
+
+[[package]]
 name = "ed25519"
 version = "2.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2417,35 +2446,6 @@ dependencies = [
  "spki",
  "subtle",
  "zeroize",
-]
-
-[[package]]
-name = "rust-backend"
-version = "0.1.0"
-dependencies = [
- "actix-files",
- "actix-multipart",
- "actix-session",
- "actix-web",
- "actix-ws",
- "async-nats",
- "chrono",
- "cron",
- "derive_more",
- "dotenv",
- "futures-util",
- "jsonwebtoken",
- "rand",
- "serde",
- "serde_json",
- "shuttle-actix-web",
- "shuttle-runtime",
- "shuttle-shared-db",
- "sqlx",
- "tokio",
- "tracing",
- "tracing-subscriber",
- "uuid",
 ]
 
 [[package]]
