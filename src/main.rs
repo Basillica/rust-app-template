@@ -43,12 +43,6 @@ async fn main(
 
     let nats_url = env::var("NATS_URL").unwrap_or_else(|_| "nats://localhost:4222".to_string());
 
-    let db_conn_str = secret_store.get("DATABASE_CONNECTION_STRING").expect("DATABASE_CONNECTION_STRING must be set");
-    let jwt_secret = secret_store.get("JWT_SECRET").expect("JWT_SECRET must be set");
-    let jwt_subjet = secret_store.get("JWT_SUBJECT").expect("JWT_SUBJECT must be set");
-    let jwt_aud = secret_store.get("JWT_AUDIENCE").expect("JWT_AUDIENCE must be set");
-    let jwt_iss = secret_store.get("JWT_ISSUER").expect("JWT_ISSUER must be set");
-
     let nats_client = match async_nats::connect(nats_url).await {
         Ok(client) => {
             let client2 = client.clone();
@@ -71,7 +65,7 @@ async fn main(
     };
 
     let pool = utils::get_db_pool(include_str!("../schema.sql")).await;
-    let data = web::Data::new(models::state::AppState{ pool, nats_client, sender, db_conn_str, jwt_secret, jwt_subjet, jwt_aud, jwt_iss});
+    let data = web::Data::new(models::state::AppState{ pool, nats_client, sender});
     let subscriber = FmtSubscriber::builder()
         .with_max_level(Level::INFO)
         .finish();
@@ -149,68 +143,68 @@ async fn main(
 }
 
 
-// #[cfg(test)]
-// mod tests {
-//     use actix_web::{http::header::ContentType, test, App};
-//     use utils::jwt::jwt::decode;
+#[cfg(test)]
+mod tests {
+    use actix_web::{http::header::ContentType, test, App};
+    use utils::jwt::jwt::decode;
 
-//     use super::*;
+    use super::*;
 
-//     #[actix_web::test]
-//     async fn test_index_post() {
-//         let app = test::init_service(
-//             App::new()
-//                 .route("/health", web::get().to(index))
-//         ).await;
-//         let req = test::TestRequest::get().uri("/health").to_request();
-//         let resp = test::call_service(&app, req).await;
-//         println!("the frigging resp{:?} and status {}", resp, resp.status());
-//         assert!(resp.status().is_success());
-//     }
+    #[actix_web::test]
+    async fn test_index_post() {
+        let app = test::init_service(
+            App::new()
+                .route("/health", web::get().to(index))
+        ).await;
+        let req = test::TestRequest::get().uri("/health").to_request();
+        let resp = test::call_service(&app, req).await;
+        println!("the frigging resp{:?} and status {}", resp, resp.status());
+        assert!(resp.status().is_success());
+    }
 
-//     #[actix_web::test]
-//     async fn test_login() {
-//         dotenv().ok();
-//         let pool = utils::get_db_pool(include_str!("../schema.sql")).await;
-//         let (tx, _rx) = mpsc::channel::<String>(100);
-//         let sender = Mutex::new(tx);
-//         // let nats_url = env::var("NATS_URL").unwrap_or_else(|_| "nats://localhost:4222".to_string());
-//         // let client = async_nats::connect(nats_url).await.unwrap();
-//         // let nats_client = Mutex::new(client);
-//         let data = web::Data::new(models::state::AppState{ pool, nats_client: None, sender });
+    #[actix_web::test]
+    async fn test_login() {
+        dotenv().ok();
+        let pool = utils::get_db_pool(include_str!("../schema.sql")).await;
+        let (tx, _rx) = mpsc::channel::<String>(100);
+        let sender = Mutex::new(tx);
+        // let nats_url = env::var("NATS_URL").unwrap_or_else(|_| "nats://localhost:4222".to_string());
+        // let client = async_nats::connect(nats_url).await.unwrap();
+        // let nats_client = Mutex::new(client);
+        let data = web::Data::new(models::state::AppState{ pool, nats_client: None, sender });
 
-//         let app = test::init_service(
-//             App::new()
-//                 .app_data(data.clone())
-//                 .wrap(default_middleware::Logger::default())
-//                 .wrap(TokenAuth::default())
-//                 .service(api::public::get_public_services())
-//                 .service(api::user::get_user_services())
-//         )
-//         .await;
+        let app = test::init_service(
+            App::new()
+                .app_data(data.clone())
+                .wrap(default_middleware::Logger::default())
+                .wrap(TokenAuth::default())
+                .service(api::public::get_public_services())
+                .service(api::user::get_user_services())
+        )
+        .await;
 
 
-//         let payload = r#"{"password":"12345", "email":"basillica@example.com"}"#.as_bytes();
+        let payload = r#"{"password":"12345", "email":"basillica@example.com"}"#.as_bytes();
 
-//         // test login
-//         let req = test::TestRequest::post()
-//             .uri("/public/login")
-//             .insert_header(ContentType::json())
-//             .set_payload(payload)
-//             .to_request();
+        // test login
+        let req = test::TestRequest::post()
+            .uri("/public/login")
+            .insert_header(ContentType::json())
+            .set_payload(payload)
+            .to_request();
 
-//         let resp = test::call_service(&app, req).await;
-//         assert!(resp.status().is_success());
-//         let body = test::read_body(resp).await;
-//         assert_eq!(true, decode(std::str::from_utf8(&body).unwrap()));
+        let resp = test::call_service(&app, req).await;
+        assert!(resp.status().is_success());
+        let body = test::read_body(resp).await;
+        assert_eq!(true, decode(std::str::from_utf8(&body).unwrap()));
 
-//         // test fetch users with token
-//         let req = test::TestRequest::get()
-//             .uri("/user/users")
-//             .insert_header(("Authorization", format!("Bearer {}", std::str::from_utf8(&body).unwrap())))
-//             .to_request();
+        // test fetch users with token
+        let req = test::TestRequest::get()
+            .uri("/user/users")
+            .insert_header(("Authorization", format!("Bearer {}", std::str::from_utf8(&body).unwrap())))
+            .to_request();
 
-//         let resp = test::call_service(&app, req).await;
-//         assert!(resp.status().is_success());
-//     }
-// }
+        let resp = test::call_service(&app, req).await;
+        assert!(resp.status().is_success());
+    }
+}
