@@ -31,15 +31,36 @@ struct CronState {
 async fn main(
     #[shuttle_shared_db::Postgres] pool: PgPool,
 ) -> ShuttleActixWeb<impl FnOnce(&mut web::ServiceConfig) + Send + Clone + 'static> {
-    dotenv().ok();
+
+// #[actix_web::main]
+// async fn main() -> std::io::Result<()> {
+//     dotenv().ok();
 
     let (tx, rx) = mpsc::channel::<String>(100);
     let sender = Mutex::new(tx);
 
     let nats_url = env::var("NATS_URL").unwrap_or_else(|_| "nats://localhost:4222".to_string());
-    let client = async_nats::connect(nats_url).await.unwrap();
-    let client2 = client.clone();
-    let nats_client = Mutex::new(client);
+    let nats_client = match async_nats::connect(nats_url).await {
+        Ok(client) => {
+            let client2 = client.clone();
+            // let handles = vec![
+            tokio::spawn(utils::queue::send_to_nats(client2.clone()));
+            tokio::spawn(utils::queue::handle_nats_messages(client2.clone()));
+            tokio::spawn(utils::queue::handler_sender(client2.clone(), rx));
+            tokio::spawn(utils::queue::receive_from_nats(client2));
+            // ];
+            // let mut results = Vec::with_capacity(handles.len());
+            // for handle in handles {
+            //     results.push(handle.await.unwrap()); // this is a blocking piece of code
+            // };
+            Some(Mutex::new(client))
+        },
+        Err(e) => {
+            eprintln!("Failed to create NATS client: {}", e);
+            None
+        },
+    };
+
     let pool = utils::get_db_pool(include_str!("../schema.sql")).await;
     let data = web::Data::new(models::state::AppState{ pool, nats_client, sender });
     let subscriber = FmtSubscriber::builder()
@@ -54,6 +75,7 @@ async fn main(
     let cron_state = CronState{
         schedule: Mutex::new(Schedule::from_str("0/10 * * * * *").unwrap()),
     };
+
     std::thread::spawn(move || {
         let mut last_run = chrono::Local::now();
         loop {
@@ -70,10 +92,6 @@ async fn main(
         }
     });
     
-    tokio::spawn(utils::queue::send_to_nats(client2.clone()));
-    tokio::spawn(utils::queue::handle_nats_messages(client2.clone()));
-    tokio::spawn(utils::queue::handler_sender(client2.clone(), rx));
-    tokio::spawn(utils::queue::receive_from_nats(client2));
 
     // uncomment this part out if you would like to run outside of shuttle
     // HttpServer::new(move || {
@@ -93,8 +111,7 @@ async fn main(
     //         .service(api::nats::get_nasts_services())
     //         .route("/health", web::get().to(index))
     //         .route("/ws", web::get().to(handlers::chat::ws))
-    // })
-    // .bind(("127.0.0.1", 8080))?
+    // }).bind(("127.0.0.1", 8080))?
     // .run()
     // .await
 
@@ -148,10 +165,10 @@ mod tests {
         let pool = utils::get_db_pool(include_str!("../schema.sql")).await;
         let (tx, _rx) = mpsc::channel::<String>(100);
         let sender = Mutex::new(tx);
-        let nats_url = env::var("NATS_URL").unwrap_or_else(|_| "nats://localhost:4222".to_string());
-        let client = async_nats::connect(nats_url).await.unwrap();
-        let nats_client = Mutex::new(client);
-        let data = web::Data::new(models::state::AppState{ pool, nats_client, sender });
+        // let nats_url = env::var("NATS_URL").unwrap_or_else(|_| "nats://localhost:4222".to_string());
+        // let client = async_nats::connect(nats_url).await.unwrap();
+        // let nats_client = Mutex::new(client);
+        let data = web::Data::new(models::state::AppState{ pool, nats_client: None, sender });
 
         let app = test::init_service(
             App::new()
