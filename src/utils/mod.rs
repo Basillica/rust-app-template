@@ -9,6 +9,7 @@ pub mod db;
 pub mod jwt;
 pub mod guard;
 pub mod queue;
+pub mod sqlite;
 
 
 #[allow(dead_code)]

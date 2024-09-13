@@ -23,6 +23,7 @@ tracing-subscriber = "0.3"
 # env vars
 dotenv = "0.15"
 jsonwebtoken = "9.3"
+libsql = "0.3.1"
 
 # db
 shuttle-actix-web = "0.47.0"
@@ -47,3 +48,5 @@ chrono = "0.4.38"
 
 # queues
 async-nats = "0.35.1"
+
+awc = "3.5.1"

@@ -4,5 +4,4 @@
 .env
 
 /easydev-api
-/src/chatserver
 Secrets*.toml

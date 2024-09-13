@@ -1,5 +1,6 @@
 use std::future::{ready, Ready};
 use std::{rc::Rc, borrow::Cow};
+use actix_web::cookie::Cookie;
 use actix_web::{dev::{Service, ServiceRequest, ServiceResponse, Transform}, error::ErrorUnauthorized, Error};
 use futures_util::future::LocalBoxFuture;
 
@@ -64,8 +65,10 @@ where
             .headers()
             .get("Authorization");
 
+        let cookie = req.cookie("token").unwrap_or_else(|| Cookie::new("token", ""));
+
         let path = req.path();
-        if path.starts_with("/public/") {
+        if path.contains("/public/") {
             let fut = self.service.call(req);
             return Box::pin(async move {
                 let res = fut.await?;
@@ -74,8 +77,7 @@ where
         };
 
         if let Some(auth_header) = auth_header {
-            let auth_token = auth_header.to_str();
-            match auth_token {
+            match auth_header.to_str() {
                 Ok(token) => {
                     let parts: Vec<&str> = token.split(" ").collect();
                     if parts.len() == 2 && parts[0] == "Bearer" {
@@ -93,9 +95,17 @@ where
                 }
             }
         } else {
-            return Box::pin(async move {
-                Err(ErrorUnauthorized("authorization header was not present in request".to_string()))
-            })
+            if cookie.value() != "" {
+                if !jwt::decode(cookie.value()) {
+                    return Box::pin(async move {
+                        Err(ErrorUnauthorized("authorization header is invalid".to_string()))
+                    })
+                }
+            } else {
+                return Box::pin(async move {
+                    Err(ErrorUnauthorized("authorization header was not present in request".to_string()))
+                })
+            }
         }
         
         let fut = self.service.call(req);

@@ -101,22 +101,18 @@
 
 # Advanced Topics
 
--   &#x2610; Middleware and Filters
+-   &#9745; Middleware and Filters
 -   &#9745; Caching Strategies
 -   &#9745; Asynchronous Programming with Tokio
--   &#x2610; Integrating with External APIs
--   &#x2610; WebAssembly and Serverless Functions
-
-# Extras
-
--   &#x2610; Using an ORM (e.g., Diesel)
+-   &#9745; Integrating with External APIs
+-   &#9745; WebAssembly and Serverless Functions
 
 # Real-world Projects and Case Studies
 
--   &#x2610; A production-grade chat server
+-   &#9745; A production-grade chat server
 -   &#x2610; Rust for distrubuted systems
 -   &#x2610; Rust for IOT+ systems
--   &#x2610; Rust as a Backend server
+-   &#9745; Rust as a Backend server
 -   &#9745; Rust for serverless functions
 -   &#x2610; Rust for GUI application
 -   &#x2610; Rust for CLI application
